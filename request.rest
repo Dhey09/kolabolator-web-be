@@ -1,0 +1,139 @@
+//Login Admin
+
+POST http://localhost:3003/api/login-member
+Content-Type: application/json
+
+{
+  "username": "helma",
+  "password": "helma123"
+}
+
+###
+//logout admin
+DELETE http://localhost:3003/api/logout
+
+###
+//create user role
+POST http://localhost:3003/api/user-roles
+Content-Type: application/json
+
+{
+    "role" : "admin"
+}
+
+###
+// Get user Role
+GET http://localhost:3003/api/user-roles
+Content-Type: application/json
+
+###
+// create admin
+POST http://localhost:3003/api/2/admin
+Content-Type: application/json
+
+{
+    "email": "helma@gmail.com",
+    "name": "Helma",
+    "username": "helma",
+    "password": "1234567",
+    "confirmPassword": "1234567"
+}
+
+###
+//create user
+POST http://localhost:3003/api/1/member
+Content-Type: application/json
+
+{
+    "name": "Helmaria Ulfa",
+    "email": "helmaria@gmail.com",
+    "username": "helma",
+    "password": "password",
+    "confirmPassword": "password",
+    "gelar": "S.Pd",
+    "pendidikan_akhir": "Sarjana",
+    "tmpt_lahir": "Bandung",
+    "tgl_lahir": "2000-08-09",
+    "jenis_kelamin": "Perempuan",
+    "agama": "Islam",
+    "pekerjaan": "Guru",
+    "no_hp": "08123456789",
+    "alamat": "Cibodas, Solokanjeruk, Kab.Bandung, Jawa Barat, Indonesia"
+}
+
+###
+//Create Book
+PATCH http://localhost:3003/api/books/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkhlbG1hIiwidXNlcm5hbWUiOiJoZWxtYSIsInJvbGVJZCI6MiwiaWF0IjoxNzIzNDQ1OTcxLCJleHAiOjE3MjM0NDk1NzF9.buV0KJUQl1joy-oBQG2xkmqPZfcD2egszzqwpWWTlQk
+
+{
+  "title": "Karya Ilmiah",
+  "author": "Pak Dedi Hartono",
+  "description": "Buku Tentang Teknik Informatika"
+}
+
+###
+//create chapter
+POST http://localhost:3003/api/books/3/chapters
+Content-Type: application/json 
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkhlbG1hIiwidXNlcm5hbWUiOiJoZWxtYSIsInJvbGVJZCI6MiwiaWF0IjoxNzIzNDUyNjY4LCJleHAiOjE3MjM0NTYyNjh9.wo0-ZOBvtZVBNgdyhsSGnvv0Q-CgrKQqwRoq9pCKOMw
+
+{
+  "part": "01",
+  "title": "Bab1: Pendahuluan",
+  "deadline": "40 Hari"
+}
+
+###
+//get chapter by bookid
+Get http://localhost:3003/api/books/3/chapters
+Content-Type: application/json
+
+###
+//update chapter
+PATCH  http://localhost:3003/api/chapters/4
+Content-Type: application/json 
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkhlbG1hIiwidXNlcm5hbWUiOiJoZWxtYSIsInJvbGVJZCI6MiwiaWF0IjoxNzIzNTE5ODAzLCJleHAiOjE3MjM1MjM0MDN9.d9RXtR8LBGK2Nqld9IaUHj2PgQrNv-gA1O13KfIyc1Y
+
+{
+  "part": "1",
+  "title": "Pendahuluan",
+  "deadline": "40 Hari",
+  "bookId": 3
+}
+
+###
+//get All Chapter
+GET http://localhost:3003/api/chapters/2
+Content-Type: application/json
+
+###
+//delete chapter
+DELETE  http://localhost:3003/api/chapters/3
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkhlbG1hIiwidXNlcm5hbWUiOiJoZWxtYSIsInJvbGVJZCI6MiwiaWF0IjoxNzIzNDc4NjQ1LCJleHAiOjE3MjM0ODIyNDV9.YE-oKOiizQ5xZl-aiVMQItY4weENKnyKztH5Y_cAkAM
+
+###
+//add checkout
+POST http://localhost:3003/api/chapters/1/checkout
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwibmFtZSI6IkhlbG1hcmlhIiwidXNlcm5hbWUiOiJoZWxtYSIsInJvbGVJZCI6MSwiaWF0IjoxNzIzNjIxNzExLCJleHAiOjE3MjM2MjUzMTF9.DBB-TgHUTuR5fs8qMCgPL_4AArHGdFjl4kT4tVFLqEQ
+
+###
+//approve checkout
+PATCH http://localhost:3003/api/checkout/approve/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkhlbG1hcmlhIiwidXNlcm5hbWUiOiJoZWxtYSIsInJvbGVJZCI6MiwiaWF0IjoxNzIzNjIxMDY5LCJleHAiOjE3MjM2MjQ2Njl9.GnLND7l2aZKCjZXeDtcQ9ep8IPe6EpPczQgzS9lUDsU
+
+###
+//get all admin
+GET http://localhost:3003/api/members
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkhlbG1hcmlhIiwidXNlcm5hbWUiOiJoZWxtYSIsInJvbGVJZCI6MiwiaWF0IjoxNzIzNjIxMDY5LCJleHAiOjE3MjM2MjQ2Njl9.GnLND7l2aZKCjZXeDtcQ9ep8IPe6EpPczQgzS9lUDsU
+
+###
+//get all member
+GET http://localhost:3003/api/checkOuts
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkhlbG1hIiwidXNlcm5hbWUiOiJoZWxtYSIsInJvbGVJZCI6MiwiaWF0IjoxNzIzNTU4MjM0LCJleHAiOjE3MjM1NjE4MzR9.wCfMv1RCuRSqN6IZ02UTjzYGSMyhdemKYhOrBISlaJo
