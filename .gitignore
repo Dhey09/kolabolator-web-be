@@ -1,0 +1,32 @@
+# ========================
+# Node.js & Express
+# ========================
+node_modules/
+.env
+.env.*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# log files
+logs
+*.log
+
+# runtime
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# coverage (testing)
+coverage/
+
+# OS & editor
+.DS_Store
+.vscode/
+.idea/
+
+# Build & dist (jika ada proses build, misal TypeScript)
+dist/
+build/
