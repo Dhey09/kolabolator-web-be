@@ -1,18 +1,20 @@
 import express from 'express';
 import {
-    LoginAdmin,
-    LoginMember,
+    Login,
     RefreshToken,
-    LogoutAdmin,
-    LogoutMember
+    Logout,
+    ForgotPassword,
+    ResetPassword
 } from '../controllers/Auth.js';
 
 const router = express.Router();
 
-router.post('/api/login-admin', LoginAdmin);
-router.post('/api/login-member', LoginMember);
+router.post('/api/login', Login);
 router.get('/api/refresh', RefreshToken);
-router.delete('/api/logout', LogoutAdmin);
-router.delete('/api/logout-member', LogoutMember);
+router.delete('/api/logout', Logout);
+
+// lupa password
+router.post('/api/forgot-password', ForgotPassword);
+router.post('/api/reset-password', ResetPassword);
 
 export default router;

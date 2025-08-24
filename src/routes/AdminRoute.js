@@ -6,14 +6,14 @@ import {
   updateAdmin,
   deleteAdmin,
 } from "../controllers/Admin.js";
-import { verifyToken, verifyAdmin } from "../middleware/authUser.js";
+import { verifyToken,  } from "../middleware/authUser.js";
 
 const router = express.Router();
 
-router.post("/api/:roleId/admin", verifyToken, verifyAdmin, createAdmin);
-router.get("/api/admins", verifyToken, verifyAdmin, getAdmins);
-router.get("/api/admin/:id", verifyToken, verifyAdmin, getAdminById);
-router.patch("/api/admin/:id", verifyToken, verifyAdmin, updateAdmin);
-router.delete("/api/admin/:id", verifyToken, verifyAdmin, deleteAdmin);
+router.post("/api/:roleId/admin",createAdmin);
+router.get("/api/admins", verifyToken, getAdmins);
+router.get("/api/admin/:id", verifyToken, getAdminById);
+router.patch("/api/admin/:id", verifyToken, updateAdmin);
+router.delete("/api/admin/:id", verifyToken, deleteAdmin);
 
 export default router;

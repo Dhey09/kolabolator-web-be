@@ -29,6 +29,19 @@ const Book = db.define(
     description: {
       type: DataTypes.STRING,
     },
+
+    category_id: {
+      type: DataTypes.STRING,
+      validate: {
+        notEmpty: true,
+      },
+    },
+    category_name: {
+      type: DataTypes.STRING,
+      validate: {
+        notEmpty: true,
+      },
+    },
   },
   {
     freezeTableName: true,

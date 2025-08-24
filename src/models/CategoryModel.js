@@ -3,15 +3,18 @@ import db from "../config/Database.js";
 
 const { DataTypes } = Sequelize;
 
-const UserRole = db.define(
-  "user_role",
+const Category = db.define(
+  "category",
   {
     uuid: {
       type: DataTypes.STRING,
       defaultValue: DataTypes.UUIDV4,
       allowNull: false,
     },
-    role_name: {
+   img: {
+      type: DataTypes.STRING,
+   },
+    name: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
@@ -24,4 +27,4 @@ const UserRole = db.define(
   }
 );
 
-export default UserRole;
+export default Category;

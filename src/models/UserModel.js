@@ -1,11 +1,12 @@
+// models/User.js
 import { Sequelize } from "sequelize";
 import db from "../config/Database.js";
-import UserRole from "./UserRoleModel.js";
+import Role from "./UserRoleModel.js";
 
 const { DataTypes } = Sequelize;
 
-const Member = db.define(
-  "member",
+const User = db.define(
+  "users",
   {
     uuid: {
       type: DataTypes.STRING,
@@ -15,45 +16,35 @@ const Member = db.define(
     name: {
       type: DataTypes.STRING,
       allowNull: false,
-      validate: {
-        notEmpty: true,
-      },
-    },
-    email: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notEmpty: true,
-      },
     },
     username: {
       type: DataTypes.STRING,
       allowNull: false,
-      validate: {
-        notEmpty: true,
-      },
+    },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      validate: { isEmail: true },
+    },
+    phone: {
+      type: DataTypes.STRING,
     },
     password: {
       type: DataTypes.STRING,
       allowNull: false,
-      validate: {
-        notEmpty: true,
-      },
     },
     refresh_token: {
       type: DataTypes.TEXT,
     },
     otp: DataTypes.STRING,
     otp_expired: DataTypes.DATE,
-    roleId: {
+    role_id: {
       type: DataTypes.INTEGER,
-      references: {
-        model: UserRole,
-        key: "id",
-      },
       allowNull: false,
-      validate: {
-        notEmpty: true,
+      references: {
+        model: Role,
+        key: "id",
       },
     },
     gelar: {
@@ -72,10 +63,7 @@ const Member = db.define(
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
     },
-    jenis_kelamin: {
-      type: DataTypes.STRING,
-      defaultValue: "-",
-    },
+    jenis_kelamin: { type: DataTypes.ENUM("Laki-laki", "Perempuan"), allowNull: true },
     agama: {
       type: DataTypes.STRING,
       defaultValue: "-",
@@ -84,21 +72,16 @@ const Member = db.define(
       type: DataTypes.STRING,
       defaultValue: "-",
     },
-    no_hp: {
-      type: DataTypes.STRING,
-      defaultValue: "-",
-    },
     alamat: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       defaultValue: "-",
     },
   },
-  {
-    freezeTableName: true,
-  }
+  { freezeTableName: true }
 );
 
-UserRole.hasMany(Member, { foreignKey: "roleId" });
-Member.belongsTo(UserRole, { foreignKey: "roleId" });
+// Relasi
+Role.hasMany(User, { foreignKey: "role_id" });
+User.belongsTo(Role, { foreignKey: "role_id" });
 
-export default Member;
+export default User;

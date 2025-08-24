@@ -35,6 +35,8 @@ const Admin = db.define(
     refresh_token: {
       type: DataTypes.TEXT,
     },
+    otp: DataTypes.STRING,
+    otp_expired: DataTypes.DATE,
     roleId: {
       type: DataTypes.INTEGER,
       references: {
@@ -52,7 +54,7 @@ const Admin = db.define(
   }
 );
 
-UserRole.hasMany(Admin, { foreignKey: "roleId"});
+UserRole.hasMany(Admin, { foreignKey: "roleId" });
 Admin.belongsTo(UserRole, { foreignKey: "roleId" });
 
 export default Admin;
