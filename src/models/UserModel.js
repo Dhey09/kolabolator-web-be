@@ -81,7 +81,8 @@ const User = db.define(
 );
 
 // Relasi
-Role.hasMany(User, { foreignKey: "role_id" });
-User.belongsTo(Role, { foreignKey: "role_id" });
+Role.hasMany(User, { foreignKey: "role_id", as: "users" });
+User.belongsTo(Role, { foreignKey: "role_id", as: "role" });
+
 
 export default User;
