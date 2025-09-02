@@ -5,17 +5,18 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import db from "./src/config/Database.js";
 import { runSeed } from "./src/seed/seed.js";
+import TransactionHistoryRoutes from "./src/routes/TransactionHistoryRoute.js";
 import UserRoutes from "./src/routes/UserRoute.js";
-import AdminRoutes from "./src/routes/AdminRoute.js";
-import MemberRoutes from "./src/routes/MemberRoute.js";
 import BookRoutes from "./src/routes/BookRoute.js";
 import ChapterRoutes from "./src/routes/ChapterRoute.js";
-import CheckOutRoutes from "./src/routes/CheckOutRoute.js";
-import UserRoleRoutes from "./src/routes/UserRoleRoute.js";
+import UserRoleRoutes from "./src/routes/RoleRoute.js";
 import CategoryRoutes from "./src/routes/CategoryRoutes.js";
 import AuthRoutes from "./src/routes/AuthRoute.js";
+import TemplateRoutes from "./src/routes/TemplateRoute.js";
+import PaymentRoutes from "./src/routes/PaymentRoute.js";
+import CollaboratorRoutes from "./src/routes/CollaboratorRoute.js";
 
-import Role from "./src/models/UserRoleModel.js";
+import "./src/utils/cronjob.js";
 
 dotenv.config();
 
@@ -30,7 +31,7 @@ try {
   console.log(error);
 }
 
-app.use(cors({ credentials: true, origin: true }));
+app.use(cors({ credentials: true, origin: "*" }));
 
 morgan.token("statusMessage", (req, res) => {
   const code = res.statusCode;
@@ -60,15 +61,16 @@ morgan.token("statusMessage", (req, res) => {
 app.use(morgan(":method: :url [:status];; :statusMessage - :response-time ms"));
 app.use(express.json());
 app.use(cookieParser());
+app.use(TransactionHistoryRoutes);
 app.use(UserRoutes);
-// app.use(AdminRoutes);
-// app.use(MemberRoutes);
-// app.use(BookRoutes);
-// app.use(ChapterRoutes);
-// app.use(CheckOutRoutes);
+app.use(BookRoutes);
+app.use(ChapterRoutes);
 app.use(UserRoleRoutes);
 app.use(CategoryRoutes);
 app.use(AuthRoutes);
+app.use(TemplateRoutes);
+app.use(PaymentRoutes);
+app.use(CollaboratorRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log("Server Is Started On Port: " + process.env.PORT);

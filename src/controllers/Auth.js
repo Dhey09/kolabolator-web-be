@@ -1,8 +1,10 @@
 import crypto from "crypto";
 import { sendEmail } from "../utils/sendEmail.js";
 import User from "../models/UserModel.js";
+import Role from "../models/RoleModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { Op } from "sequelize";
 
 // Step 1: Request OTP
 export const ForgotPassword = async (req, res) => {
@@ -63,25 +65,41 @@ export const ResetPassword = async (req, res) => {
 // Step 3: Login
 export const Login = async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { identifier, password } = req.body;
+    // identifier bisa berupa username atau email
 
-    const user = await User.findOne({ where: { username } });
+    // Cari user by username OR email
+    const user = await User.findOne({
+      where: {
+        [Op.or]: [{ username: identifier }, { email: identifier }],
+      },
+      include: [
+        {
+          model: Role,
+          as: "role",
+          attributes: ["id", "role_name"], // ambil role_id & role_name
+        },
+      ],
+    });
+
     if (!user) return res.status(404).json({ message: "User not found" });
 
+    // Cek password
     const match = await bcrypt.compare(password, user.password);
     if (!match) return res.status(400).json({ message: "Incorrect password" });
 
-    const { id, name, role_id } = user;
+    const { id, name, username, email, role_id } = user;
+    const roleName = user.role?.role_name || null;
 
     // buat token
     const accessToken = jwt.sign(
-      { id, name, username, role_id: role_id },
+      { id, name, username, email, role_id, roleName },
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: "1h" }
     );
 
     const refreshToken = jwt.sign(
-      { id, name, username, role_id: role_id },
+      { id, name, username, email, role_id, roleName },
       process.env.REFRESH_TOKEN_SECRET,
       { expiresIn: "1d" }
     );
@@ -102,7 +120,9 @@ export const Login = async (req, res) => {
         id,
         name,
         username,
-        role_id: role_id,
+        email,
+        role_id,
+        role_name: roleName,
       },
     });
   } catch (error) {
@@ -148,10 +168,7 @@ export const Logout = async (req, res) => {
   try {
     const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
 
-    await User.update(
-      { refresh_token: null },
-      { where: { id: decoded.id } }
-    );
+    await User.update({ refresh_token: null }, { where: { id: decoded.id } });
 
     res.clearCookie("refreshToken");
     return res.sendStatus(200);

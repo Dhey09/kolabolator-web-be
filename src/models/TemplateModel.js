@@ -3,18 +3,22 @@ import db from "../config/Database.js";
 
 const { DataTypes } = Sequelize;
 
-const Category = db.define(
-  "category",
+const Template = db.define(
+  "template",
   {
     uuid: {
       type: DataTypes.STRING,
       defaultValue: DataTypes.UUIDV4,
       allowNull: false,
     },
-   img: {
-      type: DataTypes.TEXT,
-   },
-    name: {
+    script: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
+    },
+    haki: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
@@ -27,4 +31,4 @@ const Category = db.define(
   }
 );
 
-export default Category;
+export default Template;

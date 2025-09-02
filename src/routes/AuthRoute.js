@@ -11,7 +11,7 @@ const router = express.Router();
 
 router.post('/api/login', Login);
 router.get('/api/refresh', RefreshToken);
-router.delete('/api/logout', Logout);
+router.post('/api/logout', Logout);
 
 // lupa password
 router.post('/api/forgot-password', ForgotPassword);

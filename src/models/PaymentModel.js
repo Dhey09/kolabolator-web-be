@@ -1,48 +1,32 @@
 import { Sequelize } from "sequelize";
 import db from "../config/Database.js";
-import UserRole from "./UserRoleModel.js";
 
 const { DataTypes } = Sequelize;
 
-const Admin = db.define(
-  "admin",
+const Payment = db.define(
+  "payment",
   {
     uuid: {
       type: DataTypes.STRING,
       defaultValue: DataTypes.UUIDV4,
       allowNull: false,
     },
+    bank: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
+    },
+    bank_rek: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
+    },
     name: {
       type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notEmpty: true,
-      },
-    },
-    email: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notEmpty: true,
-      },
-    },
-    username: {
-      type: DataTypes.STRING,
-    },
-    password: {
-      type: DataTypes.STRING,
-    },
-    refresh_token: {
-      type: DataTypes.TEXT,
-    },
-    otp: DataTypes.STRING,
-    otp_expired: DataTypes.DATE,
-    roleId: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: UserRole,
-        key: "id",
-      },
       allowNull: false,
       validate: {
         notEmpty: true,
@@ -54,7 +38,4 @@ const Admin = db.define(
   }
 );
 
-UserRole.hasMany(Admin, { foreignKey: "roleId" });
-Admin.belongsTo(UserRole, { foreignKey: "roleId" });
-
-export default Admin;
+export default Payment;

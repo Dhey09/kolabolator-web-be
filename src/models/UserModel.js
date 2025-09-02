@@ -1,7 +1,7 @@
 // models/User.js
 import { Sequelize } from "sequelize";
 import db from "../config/Database.js";
-import Role from "./UserRoleModel.js";
+import Role from "./RoleModel.js";
 
 const { DataTypes } = Sequelize;
 

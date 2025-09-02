@@ -2,16 +2,17 @@
 import { Op } from "sequelize";
 import bcrypt from "bcrypt";
 import User from "../models/UserModel.js";
-import Role from "../models/UserRoleModel.js";
+import Role from "../models/RoleModel.js";
 
 // Helper untuk flatten user jadi 1 object
 const flattenUser = (user) => ({
   id: user.id,
+  img: user.img,
   username: user.username,
   email: user.email,
   password: user.password, // hati2, ini password hash
   role_id: user.role_id,
-  role_name: user.user_role ? user.user_role.role_name : null,
+  role_name: user.role ? user.role.role_name : null, // pakai alias "role"
   name: user.name,
   phone: user.phone,
   gelar: user.gelar,
@@ -43,6 +44,7 @@ export const createUser = async (req, res) => {
       agama,
       pekerjaan,
       alamat,
+      img,
     } = req.body;
 
     if (password !== confirm_password) {
@@ -68,27 +70,14 @@ export const createUser = async (req, res) => {
       agama,
       pekerjaan,
       alamat,
+      img,
     });
 
     const role = await Role.findByPk(role_id);
 
     const result = {
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      password: user.password,
-      role_id: user.role_id,
+      ...flattenUser(user),
       role_name: role ? role.role_name : null,
-      name: user.name,
-      phone: user.phone,
-      gelar: user.gelar,
-      pendidikan_akhir: user.pendidikan_akhir,
-      tmpt_lahir: user.tmpt_lahir,
-      tgl_lahir: user.tgl_lahir,
-      jenis_kelamin: user.jenis_kelamin,
-      agama: user.agama,
-      pekerjaan: user.pekerjaan,
-      alamat: user.alamat,
     };
 
     return res.status(201).json({
@@ -126,7 +115,7 @@ export const getAllUsers = async (req, res) => {
       include: [
         {
           model: Role,
-          as: "role",
+          as: "role", // alias harus sesuai dengan model association
           attributes: ["id", "role_name"],
         },
       ],
@@ -162,7 +151,7 @@ export const getUserById = async (req, res) => {
       include: [
         {
           model: Role,
-          as: "user_role",
+          as: "role",
           attributes: ["id", "role_name"],
         },
       ],
@@ -198,6 +187,7 @@ export const updateUser = async (req, res) => {
       agama,
       pekerjaan,
       alamat,
+      img,
     } = req.body;
 
     if (!id) {
@@ -209,7 +199,7 @@ export const updateUser = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const updateData = {
+    let updateData = {
       name,
       username,
       email,
@@ -221,6 +211,7 @@ export const updateUser = async (req, res) => {
       agama,
       pekerjaan,
       alamat,
+      img,
     };
 
     if (password && password.trim() !== "") {
@@ -234,7 +225,7 @@ export const updateUser = async (req, res) => {
       include: [
         {
           model: Role,
-          as: "user_role",
+          as: "role",
           attributes: ["id", "role_name"],
         },
       ],
