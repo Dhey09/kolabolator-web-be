@@ -1,4 +1,7 @@
 // models/User.js
+// Yang di type: DataTypes.STRING(36) itu buat max value
+// kalo di validate: { len: [0, 15] } itu buat validasi, minimal(0) karakter maximal(15) karakter
+// set validasi buat data type STRING sama INTEGER aja, TEXT sama DATE biarin default 
 import { Sequelize } from "sequelize";
 import db from "../config/Database.js";
 import Role from "./RoleModel.js";
@@ -9,35 +12,42 @@ const User = db.define(
   "users",
   {
     uuid: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(36), 
       defaultValue: DataTypes.UUIDV4,
       allowNull: false,
     },
     name: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(50),
       allowNull: false,
     },
     username: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(30),
       allowNull: false,
     },
     email: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(100),
       allowNull: false,
       unique: true,
-      validate: { isEmail: true },
+      validate: { 
+        isEmail: true,
+        len: [0, 100],
+      },
     },
     phone: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(15),
+      validate: { len: [0, 15] },
     },
     password: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(100),
       allowNull: false,
     },
     refresh_token: {
       type: DataTypes.TEXT,
     },
-    otp: DataTypes.STRING,
+    otp: {
+      type: DataTypes.STRING(6),
+      validate: { len: [0, 6] },
+    },
     otp_expired: DataTypes.DATE,
     role_id: {
       type: DataTypes.INTEGER,
@@ -48,33 +58,35 @@ const User = db.define(
       },
     },
     gelar: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(20),
       defaultValue: "-",
     },
     pendidikan_akhir: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(50),
       defaultValue: "-",
     },
     tmpt_lahir: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(50),
       defaultValue: "-",
     },
     tgl_lahir: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
     },
-    jenis_kelamin: { type: DataTypes.ENUM("Laki-laki", "Perempuan"), allowNull: true },
+    jenis_kelamin: { 
+      type: DataTypes.ENUM("Laki-laki", "Perempuan"), 
+      allowNull: true 
+    },
     agama: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(20),
       defaultValue: "-",
     },
     pekerjaan: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(50),
       defaultValue: "-",
     },
     alamat: {
       type: DataTypes.TEXT,
-      defaultValue: "-",
     },
   },
   { freezeTableName: true }
@@ -83,6 +95,5 @@ const User = db.define(
 // Relasi
 Role.hasMany(User, { foreignKey: "role_id", as: "users" });
 User.belongsTo(Role, { foreignKey: "role_id", as: "role" });
-
 
 export default User;
