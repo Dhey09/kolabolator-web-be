@@ -23,6 +23,8 @@ const flattenUser = (user) => ({
   agama: user.agama,
   pekerjaan: user.pekerjaan,
   alamat: user.alamat,
+  otp: user.otp,
+  otp_expired: user.otp_expired
 });
 
 // CREATE USER
@@ -44,7 +46,7 @@ export const createUser = async (req, res) => {
       agama,
       pekerjaan,
       alamat,
-      img,
+      img
     } = req.body;
 
     if (password !== confirm_password) {
@@ -70,7 +72,7 @@ export const createUser = async (req, res) => {
       agama,
       pekerjaan,
       alamat,
-      img,
+      img
     });
 
     const role = await Role.findByPk(role_id);
@@ -85,6 +87,12 @@ export const createUser = async (req, res) => {
       data: result,
     });
   } catch (err) {
+    if (err.name === "SequelizeValidationError") {
+      return res.status(400).json({
+        message: "Validation error",
+        errors: err.errors.map((e) => ({ field: e.path, message: e.message })),
+      });
+    }
     return res.status(500).json({ message: err.message });
   }
 };
@@ -170,6 +178,40 @@ export const getUserById = async (req, res) => {
   }
 };
 
+// SEARCH USER BY EMAIL (POST)
+export const getUserByEmail = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: "Email wajib diisi" });
+    }
+
+    const user = await User.findOne({
+      where: { email },
+      include: [
+        {
+          model: Role,
+          as: "role",
+          attributes: ["id", "role_name"],
+        },
+      ],
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User dengan email tersebut tidak ditemukan" });
+    }
+
+    return res.status(200).json({
+      message: "success",
+      data: flattenUser(user),
+    });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
+
+
 // UPDATE USER (POST)
 export const updateUser = async (req, res) => {
   try {
@@ -178,6 +220,7 @@ export const updateUser = async (req, res) => {
       name,
       username,
       email,
+      phone,
       password,
       gelar,
       pendidikan_akhir,
@@ -203,6 +246,7 @@ export const updateUser = async (req, res) => {
       name,
       username,
       email,
+      phone,
       gelar,
       pendidikan_akhir,
       tmpt_lahir,

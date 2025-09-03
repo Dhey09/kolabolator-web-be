@@ -7,6 +7,7 @@ import {
   updateCollaboratorData,
   approveCollaborator,
   sendBackCollaborator,
+  getPendingCollaborators,
 } from "../controllers/Collaborator.js";
 
 const router = express.Router();
@@ -15,7 +16,7 @@ const router = express.Router();
 router.post("/api/collaborators/get-all-collaborators", getAllCollaborators);
 router.post("/api/collaborators/get-collaborator-by-id", getCollaboratorById);
 router.post(
-  "/api/collaborators/get-collaborator-by-chapter-id",
+  "/api/collaborators/get-collaborator-by-chapter",
   getCollaboratorByChapter
 );
 router.post(
@@ -27,6 +28,10 @@ router.post("/api/collaborators/approve-collaborator", approveCollaborator);
 router.post(
   "/api/collaborators/need-update-collaborator",
   sendBackCollaborator
+);
+router.post(
+  "/api/collaborators/get-collaborator-by-pending",
+  getPendingCollaborators
 );
 
 export default router;

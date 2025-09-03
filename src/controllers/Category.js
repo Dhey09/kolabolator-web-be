@@ -1,6 +1,9 @@
 // controllers/CategoryController.js
 import Category from "../models/CategoryModel.js";
 import { Op } from "sequelize";
+import xlsx from "xlsx";
+import path from "path";
+import fs from "fs";
 
 // Helper untuk flatten
 const flattenCategory = (category) => ({
@@ -8,6 +11,7 @@ const flattenCategory = (category) => ({
   name: category.name,
   img: category.img,
   description: category.description,
+  createdAt: category.createdAt,
 });
 
 // CREATE Category
@@ -120,6 +124,54 @@ export const deleteCategory = async (req, res) => {
     await category.destroy();
 
     res.json({ message: "Category deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const downloadCategoryTemplate = async (req, res) => {
+  try {
+    const headers = [["img", "name"]];
+
+    const wb = xlsx.utils.book_new();
+    const ws = xlsx.utils.aoa_to_sheet(headers);
+    xlsx.utils.book_append_sheet(wb, ws, "Category");
+
+    const buffer = xlsx.write(wb, { type: "buffer", bookType: "xlsx" });
+
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=category_template.xlsx"
+    );
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.send(buffer);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Import Category
+export const importCategory = async (req, res) => {
+  try {
+    if (!req.file)
+      return res.status(400).json({ message: "File tidak ditemukan" });
+
+    const workbook = xlsx.readFile(req.file.path);
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const rows = xlsx.utils.sheet_to_json(sheet);
+
+    for (const row of rows) {
+      await Category.create({
+        img: row.img,
+        name: row.name,
+      });
+    }
+
+    fs.unlinkSync(req.file.path); // hapus file upload
+    res.json({ message: "Import category berhasil", total: rows.length });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

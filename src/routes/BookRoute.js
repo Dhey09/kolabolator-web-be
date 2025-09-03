@@ -1,4 +1,5 @@
 import express from "express";
+import multer from "multer";
 import {
   createBook,
   getAllBooks,
@@ -6,10 +7,13 @@ import {
   getBookByCategoryId,
   updateBook,
   deleteBook,
-  updateBookStatus
+  updateBookStatus,
+  downloadBookTemplate,
+  importBook
 } from "../controllers/Book.js";
 
 const router = express.Router();
+const upload = multer({ dest: "uploads/" });
 
 
 // CREATE Book
@@ -32,5 +36,8 @@ router.post("/api/books/delete-book", deleteBook);
 
 // DELETE Book
 router.post("/api/books/update-book-status", updateBookStatus);
+
+router.get("/api/books/template", downloadBookTemplate);
+router.post("/api/books/import", upload.single("file"), importBook);
 
 export default router;

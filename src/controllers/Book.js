@@ -1,5 +1,8 @@
 // controllers/BookController.js
 import { Op } from "sequelize";
+import xlsx from "xlsx";
+import path from "path";
+import fs from "fs";
 import Book from "../models/BookModel.js";
 import Category from "../models/CategoryModel.js";
 import Chapter from "../models/ChapterModel.js";
@@ -14,6 +17,7 @@ const flattenBook = (book, stats = {}) => ({
   category_name: book.category ? book.category.name : null,
   description: book.description,
   status: book.status,
+  createdAt: book.createdAt,
   total_collaborator: stats.total_collaborator || 0,
   total_completed_collaborator: stats.total_completed_collaborator || 0,
 });
@@ -281,5 +285,60 @@ export const updateBookStatus = async (req, res) => {
       message: err.message,
       status: "error",
     });
+  }
+};
+
+export const downloadBookTemplate = async (req, res) => {
+  try {
+    const headers = [
+      [
+        "title",
+        "description",
+        "category_id",
+      ],
+    ];
+
+    const wb = xlsx.utils.book_new();
+    const ws = xlsx.utils.aoa_to_sheet(headers);
+    xlsx.utils.book_append_sheet(wb, ws, "Book");
+
+    const buffer = xlsx.write(wb, { type: "buffer", bookType: "xlsx" });
+
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=book_template.xlsx"
+    );
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.send(buffer);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Import Book
+export const importBook = async (req, res) => {
+  try {
+    if (!req.file)
+      return res.status(400).json({ message: "File tidak ditemukan" });
+
+    const workbook = xlsx.readFile(req.file.path);
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const rows = xlsx.utils.sheet_to_json(sheet);
+
+    for (const row of rows) {
+      await Book.create({
+        title: row.title,
+        description: row.description,
+        category_id: row.category_id,
+      });
+    }
+
+    fs.unlinkSync(req.file.path);
+    res.json({ message: "Import book berhasil", total: rows.length });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };

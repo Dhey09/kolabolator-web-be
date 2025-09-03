@@ -3,14 +3,24 @@ import { Op } from "sequelize";
 import Collaborator from "../models/CollaboratorModel.js";
 import Chapter from "../models/ChapterModel.js";
 import User from "../models/UserModel.js";
+import Book from "../models/BookModel.js";
+import Category from "../models/CategoryModel.js";
 
 // 🔹 global flattener supaya tidak nested
 const flattenCollaborator = (c) => ({
   id: c.id,
+  category_id: c.chapter.book.category ? c.chapter.book.category.id : null,
+  category_name: c.chapter.book.category ? c.chapter.book.category.name : null,
+  book_id: c.chapter.book ? c.chapter.book.id : null,
+  book_title: c.chapter.book ? c.chapter.book.title : null,
   chapter_id: c.chapter_id,
+  chapter_section: c.chapter ? c.chapter.chapter : null,
   chapter_title: c.chapter ? c.chapter.title : null,
+  chapter_payment_proof: c.chapter ? c.chapter.payment_proof : null,
   collaborator_id: c.collaborator_id,
   collaborator_name: c.collab ? c.collab.name : null,
+  collaborator_email: c.collab ? c.collab.email : null,
+  collaborator_phone: c.collab ? c.collab.phone : null,
   reviewer_id: c.reviewer_id,
   reviewer_name: c.reviewer ? c.reviewer.name : null,
   script: c.script,
@@ -19,6 +29,8 @@ const flattenCollaborator = (c) => ({
   address: c.address,
   status: c.status,
   notes: c.notes,
+  reviewed_at: c.reviewed_at,
+  createdAt: c.createdAt,
 });
 
 // 🔹 Get All Collaborators
@@ -39,25 +51,42 @@ export const getAllCollaborators = async (req, res) => {
         {
           model: Chapter,
           as: "chapter",
-          attributes: ["title"],
+          attributes: ["id", "title", "chapter", "payment_proof"],
           where: cari ? { title: { [Op.like]: `%${cari}%` } } : undefined,
+          include: [
+            {
+              model: Book,
+              as: "book",
+              attributes: ["id", "title"],
+              include: [
+                {
+                  model: Category,
+                  as: "category",
+                  attributes: ["id", "name"],
+                },
+              ],
+            },
+          ],
         },
         {
           model: User,
           as: "collab",
-          attributes: ["name"],
+          attributes: ["id", "name", "email", "phone"],
           where: undefined, // filter collaborator jika dibutuhkan
         },
         {
           model: User,
           as: "reviewer",
-          attributes: ["name"],
+          attributes: ["id", "name"],
           where: undefined, // filter reviewer jika dibutuhkan
         },
       ],
       where: cari
         ? {
-            [Op.or]: [{ notes: { [Op.like]: `%${cari}%` } }],
+            [Op.or]: [
+              { notes: { [Op.like]: `%${cari}%` } },
+              { status: { [Op.like]: `%${cari}%` } },
+            ],
           }
         : undefined,
       limit: per_page,
@@ -91,8 +120,30 @@ export const getCollaboratorById = async (req, res) => {
     const collaborator = await Collaborator.findOne({
       where: { id },
       include: [
-        { model: Chapter, as: "chapter", attributes: ["id", "title"] },
-        { model: User, as: "collab", attributes: ["id", "name"] },
+        {
+          model: Chapter,
+          as: "chapter",
+          attributes: ["id", "title", "chapter", "payment_proof"],
+          include: [
+            {
+              model: Book,
+              as: "book",
+              attributes: ["id", "title"],
+              include: [
+                {
+                  model: Category,
+                  as: "category",
+                  attributes: ["id", "name"],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          model: User,
+          as: "collab",
+          attributes: ["id", "name", "email", "phone"],
+        },
         { model: User, as: "reviewer", attributes: ["id", "name"] },
       ],
     });
@@ -133,8 +184,30 @@ export const getCollaboratorByChapter = async (req, res) => {
     const collaborators = await Collaborator.findAll({
       where: { chapter_id },
       include: [
-        { model: Chapter, as: "chapter", attributes: ["id", "title"] },
-        { model: User, as: "collab", attributes: ["id", "name"] },
+        {
+          model: Chapter,
+          as: "chapter",
+          attributes: ["id", "title", "chapter", "payment_proof"],
+          include: [
+            {
+              model: Book,
+              as: "book",
+              attributes: ["id", "title"],
+              include: [
+                {
+                  model: Category,
+                  as: "category",
+                  attributes: ["id", "name"],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          model: User,
+          as: "collab",
+          attributes: ["id", "name", "email", "phone"],
+        },
         { model: User, as: "reviewer", attributes: ["id", "name"] },
       ],
       order: [["id", "ASC"]],
@@ -170,8 +243,30 @@ export const getPersonalCollaborator = async (req, res) => {
     const collaborators = await Collaborator.findAll({
       where: { collaborator_id },
       include: [
-        { model: Chapter, as: "chapter", attributes: ["id", "title"] },
-        { model: User, as: "collab", attributes: ["id", "name"] },
+        {
+          model: Chapter,
+          as: "chapter",
+          attributes: ["id", "title", "chapter", "payment_proof"],
+          include: [
+            {
+              model: Book,
+              as: "book",
+              attributes: ["id", "title"],
+              include: [
+                {
+                  model: Category,
+                  as: "category",
+                  attributes: ["id", "name"],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          model: User,
+          as: "collab",
+          attributes: ["id", "name", "email", "phone"],
+        },
         { model: User, as: "reviewer", attributes: ["id", "name"] },
       ],
     });
@@ -202,7 +297,40 @@ export const updateCollaboratorData = async (req, res) => {
   try {
     const { id, script, haki, identity, address } = req.body;
 
-    const collaborator = await Collaborator.findOne({ where: { id } });
+    const collaborator = await Collaborator.findOne({
+      where: { id },
+      include: [
+        {
+          model: Chapter,
+          as: "chapter",
+          attributes: ["id", "title", "chapter", "payment_proof"],
+          include: [
+            {
+              model: Book,
+              as: "book",
+              attributes: ["id", "title"],
+              include: [
+                {
+                  model: Category,
+                  as: "category",
+                  attributes: ["id", "name"],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          model: User,
+          as: "collab",
+          attributes: ["id", "name", "email", "phone"],
+        },
+        {
+          model: User,
+          as: "reviewer",
+          attributes: ["id", "name"],
+        },
+      ],
+    });
     if (!collaborator) {
       return res.status(404).json({
         status: "error",
@@ -249,7 +377,40 @@ export const approveCollaborator = async (req, res) => {
   try {
     const { id, reviewer_id } = req.body;
 
-    const collaborator = await Collaborator.findOne({ where: { id } });
+    const collaborator = await Collaborator.findOne({
+      where: { id },
+      include: [
+        {
+          model: Chapter,
+          as: "chapter",
+          attributes: ["id", "title", "chapter", "payment_proof"],
+          include: [
+            {
+              model: Book,
+              as: "book",
+              attributes: ["id", "title"],
+              include: [
+                {
+                  model: Category,
+                  as: "category",
+                  attributes: ["id", "name"],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          model: User,
+          as: "collab",
+          attributes: ["id", "name", "email", "phone"],
+        },
+        {
+          model: User,
+          as: "reviewer",
+          attributes: ["id", "name"],
+        },
+      ],
+    });
     if (!collaborator) {
       return res.status(404).json({
         status: "error",
@@ -257,7 +418,7 @@ export const approveCollaborator = async (req, res) => {
       });
     }
 
-    collaborator.status = "uploaded";
+    collaborator.status = "completed";
     collaborator.reviewer_id = reviewer_id;
     collaborator.reviewed_at = new Date();
 
@@ -282,7 +443,40 @@ export const sendBackCollaborator = async (req, res) => {
   try {
     const { id, notes, reviewer_id } = req.body;
 
-    const collaborator = await Collaborator.findOne({ where: { id } });
+    const collaborator = await Collaborator.findOne({
+      where: { id },
+      include: [
+        {
+          model: Chapter,
+          as: "chapter",
+          attributes: ["id", "title", "chapter", "payment_proof"],
+          include: [
+            {
+              model: Book,
+              as: "book",
+              attributes: ["id", "title"],
+              include: [
+                {
+                  model: Category,
+                  as: "category",
+                  attributes: ["id", "name"],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          model: User,
+          as: "collab",
+          attributes: ["id", "name", "email", "phone"],
+        },
+        {
+          model: User,
+          as: "reviewer",
+          attributes: ["id", "name"],
+        },
+      ],
+    });
     if (!collaborator) {
       return res.status(404).json({
         status: "error",
@@ -307,6 +501,73 @@ export const sendBackCollaborator = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: "Internal Server Error",
+    });
+  }
+};
+
+// 📌 Get Collaborators by Status Pending
+export const getPendingCollaborators = async (req, res) => {
+  try {
+    const {
+      page = 0,
+      per_page = 10,
+      sort_by = "id",
+      sort_type = "ASC",
+    } = req.body;
+    const offset = page * per_page;
+
+    const { count, rows } = await Collaborator.findAndCountAll({
+      where: { status: "pending" },
+      include: [
+        {
+          model: Chapter,
+          as: "chapter",
+          attributes: ["id", "title", "chapter", "payment_proof"],
+          include: [
+            {
+              model: Book,
+              as: "book",
+              attributes: ["id", "title"],
+              include: [
+                {
+                  model: Category,
+                  as: "category",
+                  attributes: ["id", "name"],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          model: User,
+          as: "collab",
+          attributes: ["id", "name", "email", "phone"],
+        },
+        {
+          model: User,
+          as: "reviewer",
+          attributes: ["id", "name"],
+        },
+      ],
+      limit: per_page,
+      offset,
+      order: [[sort_by, sort_type]],
+    });
+
+    return res.status(200).json({
+      status: "success",
+      message: "Data collaborator dengan status pending berhasil diambil",
+      total: count,
+      page,
+      per_page,
+      data: rows.map(flattenCollaborator),
+    });
+  } catch (error) {
+    console.error("❌ Error getPendingCollaborators:", error);
+    return res.status(500).json({
+      status: "error",
+      message: "Internal Server Error",
+      error: error.message,
     });
   }
 };

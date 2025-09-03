@@ -26,15 +26,15 @@ const Collaborator = db.define(
         key: "id",
       },
     },
-    script: { type: DataTypes.TEXT, allowNull: true }, // naskah
-    haki: { type: DataTypes.TEXT, allowNull: true }, // sertifikat HAKI
-    identity: { type: DataTypes.TEXT, allowNull: true }, // KTP
+    script: { type: DataTypes.TEXT, allowNull: true, defaultValue:"" }, // naskah
+    haki: { type: DataTypes.TEXT, allowNull: true, defaultValue:"" }, // sertifikat HAKI
+    identity: { type: DataTypes.TEXT, allowNull: true, defaultValue:"" }, // KTP
     address: { type: DataTypes.TEXT, allowNull: true, defaultValue: "" }, // alamat wajib diisi
     status: {
       type: DataTypes.ENUM(
         "need_complete",
         "pending",
-        "uploaded",
+        "completed",
         "need_update"
       ),
       defaultValue: "need_complete",

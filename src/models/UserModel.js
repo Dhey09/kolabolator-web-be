@@ -1,7 +1,7 @@
 // models/User.js
 // Yang di type: DataTypes.STRING(36) itu buat max value
 // kalo di validate: { len: [0, 15] } itu buat validasi, minimal(0) karakter maximal(15) karakter
-// set validasi buat data type STRING sama INTEGER aja, TEXT sama DATE biarin default 
+// set validasi buat data type STRING sama INTEGER aja, TEXT sama DATE biarin default
 import { Sequelize } from "sequelize";
 import db from "../config/Database.js";
 import Role from "./RoleModel.js";
@@ -12,10 +12,11 @@ const User = db.define(
   "users",
   {
     uuid: {
-      type: DataTypes.STRING(36), 
+      type: DataTypes.STRING(36),
       defaultValue: DataTypes.UUIDV4,
       allowNull: false,
     },
+    img: { type: DataTypes.TEXT },
     name: {
       type: DataTypes.STRING(50),
       allowNull: false,
@@ -28,13 +29,13 @@ const User = db.define(
       type: DataTypes.STRING(100),
       allowNull: false,
       unique: true,
-      validate: { 
+      validate: {
         isEmail: true,
         len: [0, 100],
       },
     },
     phone: {
-      type: DataTypes.STRING(15),
+      type: DataTypes.STRING,
       validate: { len: [0, 15] },
     },
     password: {
@@ -45,7 +46,7 @@ const User = db.define(
       type: DataTypes.TEXT,
     },
     otp: {
-      type: DataTypes.STRING(6),
+      type: DataTypes.STRING,
       validate: { len: [0, 6] },
     },
     otp_expired: DataTypes.DATE,
@@ -58,31 +59,31 @@ const User = db.define(
       },
     },
     gelar: {
-      type: DataTypes.STRING(20),
+      type: DataTypes.STRING,
       defaultValue: "-",
     },
     pendidikan_akhir: {
-      type: DataTypes.STRING(50),
+      type: DataTypes.STRING,
       defaultValue: "-",
     },
     tmpt_lahir: {
-      type: DataTypes.STRING(50),
+      type: DataTypes.STRING,
       defaultValue: "-",
     },
     tgl_lahir: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
     },
-    jenis_kelamin: { 
-      type: DataTypes.ENUM("Laki-laki", "Perempuan"), 
-      allowNull: true 
+    jenis_kelamin: {
+      type: DataTypes.ENUM("Laki-laki", "Perempuan"),
+      allowNull: true,
     },
     agama: {
-      type: DataTypes.STRING(20),
+      type: DataTypes.STRING,
       defaultValue: "-",
     },
     pekerjaan: {
-      type: DataTypes.STRING(50),
+      type: DataTypes.STRING,
       defaultValue: "-",
     },
     alamat: {

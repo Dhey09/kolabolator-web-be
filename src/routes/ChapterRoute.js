@@ -1,4 +1,6 @@
 import express from "express";
+import multer from "multer";
+
 import {
   createChapter,
   getChapters,
@@ -12,12 +14,12 @@ import {
   uploadPaymentProof,
   getWaitingChapters,
   approveChapter,
-  // downloadChapterTemplate,
-  // exportChapterToExcel,
+ downloadChapterTemplate,
+ importChapter
 } from "../controllers/Chapter.js";
-import { makeUploader } from "../middleware/upload.js";
 
 const router = express.Router();
+const upload = multer({ dest: "uploads/" });
 
 // CREATE
 router.post("/api/chapters/create-chapter", createChapter);
@@ -52,7 +54,7 @@ router.post("/api/chapters/waiting-chapter", getWaitingChapters);
 router.post("/api/chapters/approval-chapter", approveChapter);
 
 // Excel
-// router.post("/api/chapters/download", downloadChapterTemplate);
-// router.post("/api/chapters/export", exportChapterToExcel);
+router.get("/api/chapters/template", downloadChapterTemplate);
+router.post("/api/chapters/import", upload.single("file"), importChapter);
 
 export default router;
