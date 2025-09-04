@@ -149,14 +149,25 @@ export const getBookById = async (req, res) => {
 // GET Books BY CATEGORY_ID
 export const getBookByCategoryId = async (req, res) => {
   try {
-    const { category_id } = req.body;
+    const { category_id, cari } = req.body;
 
     if (!category_id) {
       return res.status(400).json({ message: "category_id wajib diisi" });
     }
 
+    const whereCondition = {
+      category_id,
+    };
+
+    // Tambahkan filter pencarian judul jika ada body.cari
+    if (cari) {
+      whereCondition.title = {
+        [Op.like]: `%${cari}%`,
+      };
+    }
+
     const books = await Book.findAll({
-      where: { category_id },
+      where: whereCondition,
       include: [
         { model: Category, as: "category", attributes: ["id", "name"] },
       ],
@@ -290,13 +301,7 @@ export const updateBookStatus = async (req, res) => {
 
 export const downloadBookTemplate = async (req, res) => {
   try {
-    const headers = [
-      [
-        "title",
-        "description",
-        "category_id",
-      ],
-    ];
+    const headers = [["title", "description", "category_id"]];
 
     const wb = xlsx.utils.book_new();
     const ws = xlsx.utils.aoa_to_sheet(headers);
