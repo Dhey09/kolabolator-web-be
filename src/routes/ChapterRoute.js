@@ -13,9 +13,10 @@ import {
   getChaptersByCheckoutBy,
   uploadPaymentProof,
   getWaitingChapters,
+  getTransactionLists,
   approveChapter,
- downloadChapterTemplate,
- importChapter
+  downloadChapterTemplate,
+  importChapter,
 } from "../controllers/Chapter.js";
 
 const router = express.Router();
@@ -50,6 +51,7 @@ router.post("/api/chapters/personal-checkout", getChaptersByCheckoutBy);
 router.post("/api/chapters/payment_proof", uploadPaymentProof);
 
 // NEED APPROVE LIST
+router.post("/api/chapters/transaction-chapter", getTransactionLists);
 router.post("/api/chapters/waiting-chapter", getWaitingChapters);
 router.post("/api/chapters/approval-chapter", approveChapter);
 

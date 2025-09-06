@@ -16,7 +16,7 @@ cron.schedule("* * * * *", async () => {
 
     for (const ch of chapters) {
       await ch.update({
-        status: "on_sale",
+        status: "open",
         expired_at: null,
         checkout_by: null,
       });

@@ -418,13 +418,13 @@ export const approveChapter = async (req, res) => {
 
     await chapter.reload();
 
-    await TransactionHistory.create({
-      chapter_id: chapter.id,
-      collaborator_id: chapter.checkout_by,
-      checked_by_id: checker_id,
-      status,
-      notes: notes || "-",
-    });
+    // await TransactionHistory.create({
+    //   chapter_id: chapter.id,
+    //   collaborator_id: chapter.checkout_by,
+    //   checked_by_id: checker_id,
+    //   status,
+    //   notes: notes || "-",
+    // });
 
     const data = flattenChapter(chapter.toJSON());
 
@@ -464,6 +464,41 @@ export const getWaitingChapters = async (req, res) => {
 
     res.json({
       message: "Daftar chapter waiting berhasil diambil",
+      total: chapters.length,
+      data,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getTransactionLists = async (req, res) => {
+  try {
+    const chapters = await Chapter.findAll({
+      where: {
+        status: {
+          [Op.or]: ["waiting", "close"],
+        },
+      },
+      include: [
+        {
+          model: Book,
+          as: "book",
+          include: [{ model: Category, as: "category" }],
+        },
+        {
+          model: User,
+          as: "checkout",
+          attributes: ["id", "name", "email", "phone"],
+        },
+        { model: User, as: "checker", attributes: ["id", "name"] },
+      ],
+    });
+
+    const data = chapters.map((ch) => flattenChapter(ch.toJSON()));
+
+    res.json({
+      message: "Daftar list transaksi berhasil diambil",
       total: chapters.length,
       data,
     });
