@@ -5,6 +5,7 @@ import Chapter from "../models/ChapterModel.js";
 import User from "../models/UserModel.js";
 import Book from "../models/BookModel.js";
 import Category from "../models/CategoryModel.js";
+import ExcelJS from "exceljs";
 
 // 🔹 global flattener supaya tidak nested
 const flattenCollaborator = (c) => ({
@@ -32,6 +33,102 @@ const flattenCollaborator = (c) => ({
   reviewed_at: c.reviewed_at,
   createdAt: c.createdAt,
 });
+
+const flattenForExport = (c) => ({
+  kategori_buku: c.chapter.book.category?.name || null,
+  judul_buku: c.chapter.book?.title || null,
+  bagian: c.chapter?.chapter || null,
+  judul_bagian: c.chapter?.title || null,
+  harga_bagian: c.chapter?.price || null,
+  deadline_bagian: c.chapter?.deadline || null,
+  nama_kolaborator: c.chapter.checkout?.name || null,
+  email_kolaborator: c.chapter.checkout?.email || null,
+  no_hp_kolaborator: c.chapter.checkout?.phone || null,
+  bukti_pembayaran: c.chapter?.payment_proof || null,
+  naskah: c.script || null,
+  haki: c.haki || null,
+  ktp: c.identity || null,
+  alamat: c.address || null,
+  pembayaran_di_cek_oleh: c.chapter.checker?.name || null,
+  dokumen_di_cek_oleh: c.reviewer?.name,
+});
+
+export const exportCollaborators = async (req, res) => {
+  try {
+    const collaborators = await Collaborator.findAll({
+      include: [
+        {
+          model: Chapter,
+          as: "chapter",
+          attributes: [
+            "id",
+            "title",
+            "chapter",
+            "price",
+            "deadline",
+            "payment_proof",
+          ],
+          include: [
+            {
+              model: User,
+              as: "checkout",
+              attributes: ["id", "name", "email", "phone"],
+            },
+            {
+              model: User,
+              as: "checker",
+              attributes: ["id", "name"],
+            },
+            {
+              model: Book,
+              as: "book",
+              attributes: ["id", "title"],
+              include: [
+                {
+                  model: Category,
+                  as: "category",
+                  attributes: ["id", "name"],
+                },
+              ],
+            },
+          ],
+        },
+        {
+              model: User,
+              as: "reviewer",
+              attributes: ["id", "name"],
+            },
+      ],
+    });
+    const data = collaborators.map(flattenForExport);
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Collaborators");
+
+    worksheet.columns = Object.keys(data[0]).map((key) => ({
+      header: key,
+      key,
+      width: 25,
+    }));
+
+    worksheet.addRows(data);
+
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=collaborators.xlsx"
+    );
+
+    await workbook.xlsx.write(res);
+    res.end();
+  } catch (error) {
+    console.error("❌ Error export:", error);
+    return res.status(500).json({ status: "error", message: error.message });
+  }
+};
 
 // 🔹 Get All Collaborators
 export const getAllCollaborators = async (req, res) => {

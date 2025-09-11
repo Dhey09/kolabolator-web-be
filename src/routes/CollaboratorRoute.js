@@ -8,6 +8,7 @@ import {
   approveCollaborator,
   sendBackCollaborator,
   getPendingCollaborators,
+  exportCollaborators,
 } from "../controllers/Collaborator.js";
 
 const router = express.Router();
@@ -33,5 +34,7 @@ router.post(
   "/api/collaborators/get-collaborator-by-pending",
   getPendingCollaborators
 );
+
+router.post("/api/collaborators/export", exportCollaborators);
 
 export default router;
