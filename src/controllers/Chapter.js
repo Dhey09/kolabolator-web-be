@@ -517,7 +517,7 @@ export const getChaptersByCategory = async (req, res) => {
 
     const chapters = await Chapter.findAll({
       include: [
-        { model: User, as: "checkout", attributes: ["id", "name"] },
+        { model: User, as: "checkout", attributes: ["id", "name", "phone", "email", "gelar"] },
         { model: User, as: "checker", attributes: ["id", "name"] },
         {
           model: Book,
@@ -563,7 +563,7 @@ export const getChaptersByBook = async (req, res) => {
         ],
       },
       include: [
-        { model: User, as: "checkout", attributes: ["id", "name"] },
+        { model: User, as: "checkout", attributes: ["id", "name", "phone", "email", "gelar"] },
         { model: User, as: "checker", attributes: ["id", "name"] },
         {
           model: Book,
