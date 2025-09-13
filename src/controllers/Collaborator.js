@@ -95,10 +95,10 @@ export const exportCollaborators = async (req, res) => {
           ],
         },
         {
-              model: User,
-              as: "reviewer",
-              attributes: ["id", "name"],
-            },
+          model: User,
+          as: "reviewer",
+          attributes: ["id", "name"],
+        },
       ],
     });
     const data = collaborators.map(flattenForExport);
@@ -184,6 +184,8 @@ export const getAllCollaborators = async (req, res) => {
             [Op.or]: [
               { notes: { [Op.like]: `%${cari}%` } },
               { status: { [Op.like]: `%${cari}%` } },
+              { "$chapter.book.title$": { [Op.like]: `%${cari}%` } },
+              { "$chapter.title$": { [Op.like]: `%${cari}%` } },
             ],
           }
         : undefined,
