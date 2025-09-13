@@ -185,7 +185,7 @@ export const updateChapter = async (req, res) => {
         {
           model: User,
           as: "checkout",
-          attributes: ["id", "name", "email", "phone", , "gelar"],
+          attributes: ["id", "name", "email", "phone", "gelar"],
         },
         { model: User, as: "checker", attributes: ["id", "name"] },
         {
@@ -272,7 +272,7 @@ export const checkoutChapter = async (req, res) => {
         {
           model: User,
           as: "checkout",
-          attributes: ["id", "name", "email", "phone", , "gelar"],
+          attributes: ["id", "name", "email", "phone", "gelar"],
         },
       ],
     });
