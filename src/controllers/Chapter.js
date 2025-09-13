@@ -34,6 +34,7 @@ const flattenChapter = (chapter) => ({
   checked_by_name: chapter.checked_by_name || chapter.checker?.name || null,
   checkout_by: chapter.checkout_by || chapter.checkout?.id || null,
   checkout_by_name: chapter.checkout_by_name || chapter.checkout?.name || null,
+  checkout_by_gelar: chapter.checkout_by_gelar || chapter.checkout?.gelar || null,
   checkout_by_email:
     chapter.checkout_by_email || chapter.checkout?.email || null,
   checkout_by_phone:
@@ -106,7 +107,7 @@ export const getChapters = async (req, res) => {
         {
           model: User,
           as: "checkout",
-          attributes: ["id", "name", "email", "phone"],
+          attributes: ["id", "name", "email", "phone", "gelar"],
         },
         {
           model: User,
@@ -148,7 +149,7 @@ export const getChapterById = async (req, res) => {
         {
           model: User,
           as: "checkout",
-          attributes: ["id", "name", "email", "phone"],
+          attributes: ["id", "name", "email", "phone", "gelar"],
         },
         {
           model: User,
@@ -184,7 +185,7 @@ export const updateChapter = async (req, res) => {
         {
           model: User,
           as: "checkout",
-          attributes: ["id", "name", "email", "phone"],
+          attributes: ["id", "name", "email", "phone", , "gelar"],
         },
         { model: User, as: "checker", attributes: ["id", "name"] },
         {
@@ -271,7 +272,7 @@ export const checkoutChapter = async (req, res) => {
         {
           model: User,
           as: "checkout",
-          attributes: ["id", "name", "email", "phone"],
+          attributes: ["id", "name", "email", "phone", , "gelar"],
         },
       ],
     });
@@ -309,7 +310,7 @@ export const getChaptersByCheckoutBy = async (req, res) => {
         {
           model: User,
           as: "checkout",
-          attributes: ["id", "name", "email", "phone"],
+          attributes: ["id", "name", "email", "phone", , "gelar"],
         },
         { model: User, as: "checker", attributes: ["id", "name"] },
       ],
@@ -355,7 +356,7 @@ export const uploadPaymentProof = async (req, res) => {
         {
           model: User,
           as: "checkout",
-          attributes: ["id", "name", "email", "phone"],
+          attributes: ["id", "name", "email", "phone", "gelar"],
         },
         { model: User, as: "checker", attributes: ["id", "name"] },
       ],
@@ -388,7 +389,7 @@ export const approveChapter = async (req, res) => {
         {
           model: User,
           as: "checkout",
-          attributes: ["id", "name", "email", "phone"],
+          attributes: ["id", "name", "email", "phone", "gelar"],
         },
         { model: User, as: "checker", attributes: ["id", "name"] },
       ],
@@ -454,7 +455,7 @@ export const getWaitingChapters = async (req, res) => {
         {
           model: User,
           as: "checkout",
-          attributes: ["id", "name", "email", "phone"],
+          attributes: ["id", "name", "email", "phone", "gelar"],
         },
         { model: User, as: "checker", attributes: ["id", "name"] },
       ],
@@ -489,7 +490,7 @@ export const getTransactionLists = async (req, res) => {
         {
           model: User,
           as: "checkout",
-          attributes: ["id", "name", "email", "phone"],
+          attributes: ["id", "name", "email", "phone", "gelar"],
         },
         { model: User, as: "checker", attributes: ["id", "name"] },
       ],

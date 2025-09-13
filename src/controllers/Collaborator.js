@@ -20,6 +20,7 @@ const flattenCollaborator = (c) => ({
   chapter_payment_proof: c.chapter ? c.chapter.payment_proof : null,
   collaborator_id: c.collaborator_id,
   collaborator_name: c.collab ? c.collab.name : null,
+  collaborator_gelar: c.collab ? c.collab.gelar : null,
   collaborator_email: c.collab ? c.collab.email : null,
   collaborator_phone: c.collab ? c.collab.phone : null,
   reviewer_id: c.reviewer_id,
@@ -168,7 +169,7 @@ export const getAllCollaborators = async (req, res) => {
         {
           model: User,
           as: "collab",
-          attributes: ["id", "name", "email", "phone"],
+          attributes: ["id", "name", "email", "phone", "gelar"],
           where: undefined, // filter collaborator jika dibutuhkan
         },
         {
@@ -239,7 +240,7 @@ export const getCollaboratorById = async (req, res) => {
         {
           model: User,
           as: "collab",
-          attributes: ["id", "name", "email", "phone"],
+          attributes: ["id", "name", "email", "phone", "gelar"],
         },
         { model: User, as: "reviewer", attributes: ["id", "name"] },
       ],
@@ -303,7 +304,7 @@ export const getCollaboratorByChapter = async (req, res) => {
         {
           model: User,
           as: "collab",
-          attributes: ["id", "name", "email", "phone"],
+          attributes: ["id", "name", "email", "phone", "gelar"],
         },
         { model: User, as: "reviewer", attributes: ["id", "name"] },
       ],
@@ -362,7 +363,7 @@ export const getPersonalCollaborator = async (req, res) => {
         {
           model: User,
           as: "collab",
-          attributes: ["id", "name", "email", "phone"],
+          attributes: ["id", "name", "email", "phone", "gelar"],
         },
         { model: User, as: "reviewer", attributes: ["id", "name"] },
       ],
@@ -419,7 +420,7 @@ export const updateCollaboratorData = async (req, res) => {
         {
           model: User,
           as: "collab",
-          attributes: ["id", "name", "email", "phone"],
+          attributes: ["id", "name", "email", "phone", "gelar"],
         },
         {
           model: User,
@@ -499,7 +500,7 @@ export const approveCollaborator = async (req, res) => {
         {
           model: User,
           as: "collab",
-          attributes: ["id", "name", "email", "phone"],
+          attributes: ["id", "name", "email", "phone", "gelar"],
         },
         {
           model: User,
@@ -565,7 +566,7 @@ export const sendBackCollaborator = async (req, res) => {
         {
           model: User,
           as: "collab",
-          attributes: ["id", "name", "email", "phone"],
+          attributes: ["id", "name", "email", "phone", "gelar"],
         },
         {
           model: User,
@@ -638,7 +639,7 @@ export const getPendingCollaborators = async (req, res) => {
         {
           model: User,
           as: "collab",
-          attributes: ["id", "name", "email", "phone"],
+          attributes: ["id", "name", "email", "phone", "gelar"],
         },
         {
           model: User,
